@@ -115,7 +115,7 @@ func getContact(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	addr := flag.String("addr", ":4000", "Network address")
+	addr := flag.String("addr", ":80", "Network address")
 	dsn := flag.String("dsn", "alex:Or$kumashnd417@/contactbox?parseTime=True", "MYSQL data source name")
 
 	flag.Parse()
