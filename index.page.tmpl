@@ -34,22 +34,23 @@
           <div class="container">
             <p class="head">Interests</p>
             <ul>
-              <li>Drawing</li>
+              <li>Machine Learning</li>
               <li>Photography</li>
               <li>Design</li>
               <li>Programming</li>
               <li>Computer Science</li>
+              <li>Engineering</li>
             </ul>
           </div>
           <div class="container">
             <p class="head">Education</p>
             <ul>
-              <a href="http://www.wiltonhighschool.org/pages/Wilton_High_School">
-                <li>Wilton High School</li>
+              <a href="https://www.abu.edu.ng/">
+                <li>Ahmadu Bello University Zaria</li>
               </a>
               <!--Link-->
-              <a href="https://www.silvermineart.org/">
-                <li>Silvermine School of Arts</li>
+              <a href="https://unilag.edu.ng/">
+                <li>University of Lagos</li>
               </a>
               <li>Codeacademy</li>
             </ul>
@@ -62,23 +63,31 @@
               <li>Web Design with HTML & CSS</li>
             </ul>
             <ul>
-              <li>Web Design with HTML & CSS</li>
+              <li>Backend Devlopement with Golang</li>
             </ul>
             <ul>
-              <li>Web Design with HTML & CSS</li>
+              <li>Cloud Computing with AWS, GCLOUD, AZURE</li>
+            </ul>
+            <ul>
+              <li>System cofiguration with Ansible, chef and Powershell DSC</li>
+            </ul>
+            <ul>
+              <li>Dynamics navision administration</li>
             </ul>
           </div>
           <div class="container">
             <p class="head">Experience</p>
             <ul>
-              <li>Student Technology Intern for Wilton School District</li>
-              <li>Babysitter</li>
+              <li>Junior Backend Engineer at Smackers Limited</li>
+              <li>IT Support Engineer at Global Ocean Engineers</li>
+               <li>Developer Intern at Zuri.Team</li>
             </ul>
             <p class="head">Extracurriculars</p>
             <ul>
               <li>Recycling Club</li>
               <li>Gardening Club</li>
               <li>Book Club</li>
+              <li>Soccer</li>
             </ul>
           </div>
         </div>
@@ -86,19 +95,19 @@
     </div>
 
     <div class="container">
-      <form>
+      <form action='/contact' method='POST'>
         <div class="container">
           <div class="row">
             <div class="col">
               <div class="form-group">
                 <label for="exampleInputEmail1">Name</label>
-                <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Name">
+                <input type="text" class="form-control" id="exampleInputEmail1" name="name" aria-describedby="emailHelp" placeholder="Enter Name">
               </div>
             </div>
             <div class="col">
               <div class="form-group">
                 <label for="exampleInputEmail1">Email address</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                <input type="email" name="email" class="form-control" id="exampleInputEmail1"  naria-describedby="emailHelp" placeholder="Enter email">
                 <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
               </div>
             </div>
@@ -107,7 +116,7 @@
         <div class="container">
           <div class="form-group">
             <label for="exampleFormControlTextarea1">Message</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="4"></textarea>
+            <textarea name="content" class="form-control" id="exampleFormControlTextarea1" rows="4"></textarea>
           </div>
         </div>
         <div class="container">
