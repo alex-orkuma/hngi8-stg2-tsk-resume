@@ -2,19 +2,25 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"regexp"
+	"strconv"
+	"strings"
 	"text/template"
 	"time"
+	"unicode/utf8"
 
 	"github.com/bmizerany/pat"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 var db *sql.DB
+var EmailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 
 type Contact struct {
 	ID      int
@@ -54,7 +60,30 @@ func createContact(w http.ResponseWriter, r *http.Request) {
 	email := r.PostForm.Get("email")
 	content := r.PostForm.Get("content")
 
-	_, err = addContact(Contact{
+	errors := make(map[string]string)
+
+	if strings.TrimSpace(name) == "" {
+		errors["name"] = "This field cannot be blank"
+	} else if utf8.RuneCountInString(name) > 100 {
+		errors["name"] = "This field is too long (maximum is 100 characters)"
+	}
+
+	if strings.TrimSpace(content) == "" {
+		errors["content"] = "This field cannot be blank"
+	}
+
+	if strings.TrimSpace(email) == "" {
+		errors["email"] = "This field cannot be blank"
+	} else if !EmailRegex.MatchString(email) {
+		errors["email"] = "Please enter a valid email address"
+	}
+
+	if len(errors) > 0 {
+		fmt.Fprint(w, errors)
+		return
+	}
+
+	id, err := addContact(Contact{
 		Name:    name,
 		Email:   email,
 		Content: content,
@@ -64,6 +93,25 @@ func createContact(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("addContact: %v", err)
 	}
+	http.Redirect(w, r, fmt.Sprintf("/contact/%d", id), http.StatusSeeOther)
+}
+
+func getContact(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	if err != nil || id < 1 {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	cont, err := readContact(int64(id))
+	if err != nil {
+		if errors.Is(err, fmt.Errorf("contactById %d: no such message", id)) {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		} else {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+	}
+	fmt.Fprintf(w, "Thank you %v for contacting me, I will get back to you soon", cont.Name)
 }
 
 func main() {
@@ -89,6 +137,7 @@ func main() {
 	// register the home handler
 	mux.Get("/", http.HandlerFunc(home))
 	mux.Post("/contact", http.HandlerFunc(createContact))
+	mux.Get("/contact/:id", http.HandlerFunc(getContact))
 
 	srv := &http.Server{
 		Addr:     *addr,
@@ -125,4 +174,19 @@ func addContact(cont Contact) (int64, error) {
 		return 0, err
 	}
 	return id, nil
+}
+
+func readContact(id int64) (Contact, error) {
+	var cont Contact
+
+	row := db.QueryRow("SELECT * FROM contacts WHERE id = ?", id)
+
+	if err := row.Scan(&cont.ID, &cont.Name, &cont.Email, &cont.Content, &cont.Created); err != nil {
+		if err == sql.ErrNoRows {
+			return cont, fmt.Errorf("contactById %d: no such message", id)
+		}
+		return cont, fmt.Errorf("contactById %d: %v", id, err)
+	}
+
+	return cont, nil
 }
