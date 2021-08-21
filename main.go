@@ -103,15 +103,12 @@ func getContact(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cont, err := readContact(int64(id))
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-	}
 	fmt.Fprintf(w, "Thank you %v for contacting me, I will get back to you soon", cont.Name)
 }
 
 func main() {
 	addr := flag.String("addr", ":9990", "Network address")
-	dsn := flag.String("dsn", "mysql://b933513a97f1b0:ab2f8444@tcp(us-cdbr-east-04.cleardb.com)/heroku_8b3f1c081c34d00?reconnect=true", "MYSQL data source name")
+	dsn := flag.String("dsn", "b933513a97f1b0:ab2f8444@tcp(us-cdbr-east-04.cleardb.com)/heroku_8b3f1c081c34d00", "MYSQL data source name")
 
 	flag.Parse()
 
