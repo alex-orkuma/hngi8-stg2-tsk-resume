@@ -102,12 +102,18 @@ func getContact(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cont, err := readContact(int64(id))
+	cont, _ := readContact(int64(id))
 	fmt.Fprintf(w, "Thank you %v for contacting me, I will get back to you soon", cont.Name)
 }
 
 func main() {
-	addr := flag.String("addr", ":9990", "Network address")
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+
+	addr := ":" + port
 	dsn := flag.String("dsn", "b933513a97f1b0:ab2f8444@tcp(us-cdbr-east-04.cleardb.com)/heroku_8b3f1c081c34d00", "MYSQL data source name")
 
 	flag.Parse()
@@ -132,12 +138,12 @@ func main() {
 	mux.Get("/contact/:id", http.HandlerFunc(getContact))
 
 	srv := &http.Server{
-		Addr:     *addr,
+		Addr:     addr,
 		ErrorLog: erroLog,
 		Handler:  mux,
 	}
 
-	infoLog.Printf("Starting a server on %s", *addr)
+	infoLog.Printf("Starting a server on %s", addr)
 
 	// start a new webserver on port :4000
 	err = srv.ListenAndServe()
