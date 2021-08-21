@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -105,11 +104,7 @@ func getContact(w http.ResponseWriter, r *http.Request) {
 
 	cont, err := readContact(int64(id))
 	if err != nil {
-		if errors.Is(err, fmt.Errorf("contactById %d: no such message", id)) {
-			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		} else {
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		}
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 	fmt.Fprintf(w, "Thank you %v for contacting me, I will get back to you soon", cont.Name)
 }
