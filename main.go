@@ -140,9 +140,11 @@ func main() {
 	mux.Get("/contact/:id", http.HandlerFunc(getContact))
 
 	srv := &http.Server{
-		Addr:     *addr,
-		ErrorLog: erroLog,
-		Handler:  mux,
+		Addr:         *addr,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		ErrorLog:     erroLog,
+		Handler:      mux,
 	}
 
 	infoLog.Printf("Starting a server on %s", *addr)
